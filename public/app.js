@@ -13,7 +13,7 @@ let localStream = null;
 let peerConnection = null;
 let remoteSocketId = null;
 
-const configuration = {
+let configuration = {
     iceServers: [
         {
             urls: "stun:stun.l.google.com:19302"
@@ -21,15 +21,35 @@ const configuration = {
     ]
 };
 
+async function loadTurnCredentials() {
+    try {
+        const response = await fetch("/turn-credentials");
+
+        if (!response.ok) {
+            throw new Error("Não foi possível obter as credenciais TURN.");
+        }
+
+        const data = await response.json();
+
+        configuration.iceServers = data.iceServers;
+
+        console.log("TURN carregado:", configuration.iceServers);
+
+    } catch (error) {
+        console.error("Erro ao carregar TURN:", error);
+    }
+}
 // entrar na salinha de compartilhamento de telas
 
-joinButton.addEventListener("click", () => {
+joinButton.addEventListener("click", async () => {
     roomId = roomInput.value.trim();
 
     if(!roomId) {
         alert("digite o nome da sala fazendo favor");
         return;
     }
+
+    await loadTurnCredentials();
 
     socket.emit("join-room", roomId);
 

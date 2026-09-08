@@ -11,6 +11,43 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.static(path.join(__dirname, "public")));
 
+app.get("/turn-credentials", async (req, res) => {
+    try {
+        const response = await fetch(
+            `https://rtc.live.cloudflare.com/v1/turn/keys/${process.env.CLOUDFLARE_TURN_TOKEN_ID}/credentials/generate-ice-servers`,
+            {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${process.env.CLOUDFLARE_API_TOKEN}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    ttl: 86400
+                })
+            }
+        );
+
+        if (!response.ok) {
+            const error = await response.text();
+            console.error("Erro Cloudflare TURN:", error);
+            return res.status(500).json({
+                error: "Não foi possível gerar credenciais TURN."
+            });
+        }
+
+        const data = await response.json();
+
+        res.json(data);
+
+    } catch (error) {
+        console.error("Erro ao obter TURN:", error);
+
+        res.status(500).json({
+            error: "Erro interno ao obter TURN."
+        });
+    }
+});
+
 io.on("connection", (socket) => {
 
     console.log("Usuário conectado:", socket.id);
