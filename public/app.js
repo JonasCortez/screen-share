@@ -3,6 +3,9 @@ const socket = io();
 const roomInput = document.getElementById("roomInput");
 const joinButton = document.getElementById("joinButton");
 const shareButton = document.getElementById("shareButton");
+const resolutionSelect = document.getElementById("resolutionSelect");
+const fpsSelect = document.getElementById("fpsSelect");
+const fullscreenButton = document.getElementById("fullscreenButton");
 
 const localVideo = document.getElementById("localVideo");
 const remoteVideo = document.getElementById("remoteVideo");
@@ -65,18 +68,44 @@ joinButton.addEventListener("click", async () => {
 
 shareButton.addEventListener("click", async () => {
     try {
+
+        const [width, height] = resolutionSelect.value
+            .split("x")
+            .map(Number);
+        const fps = Number(fpsSelect.value);
+
         localStream = await navigator.mediaDevices.getDisplayMedia({ 
             video: {
-                frameRate: 120
+                width: {
+                    ideal: width
+                },
+                height: {
+                    ideal: height
+                },
+                frameRate: {
+                    ideal: fps,
+                    max: fps
+                }
             },
-            audio: true
+            audio: {
+                echoCancellation: false,
+                noiseSuppression: false,
+                autoGainControl: false
+            }
          });
 
         localVideo.srcObject = localStream;
 
-        status.textContent = "compartilhando a tela";
+        status.textContent =
+            `Transmitindo a tela em ${width}x${height} a ${fps}fps`;
 
-        localStream.getVideoTracks()[0].addEventListener("ended", () => {
+        const videoTrack = localStream.getVideoTracks()[0];
+
+        console.log("configuração real da captura:",
+            videoTrack.getSettings()
+        );
+
+        videoTrack.addEventListener("ended", () => {
             status.textContent = "parou de compartilhar a tela";
         });
 
@@ -214,4 +243,17 @@ socket.on("ice-candidate", async ({ sender, candidate }) => {
     } catch (error) {
         console.error("erro ao adicionar candidato ICE:", error);
     }
+});
+
+fullscreenButton.addEventListener("click", async () => {
+    try {
+        if(!document.fullscreenElement) {
+            await remoteVideo.requestFullscreen();
+        } else {
+            await document.exitFullscreen();
+        }
+    } catch (error) {
+        console.error("erro ao alternar para tela cheia:", error);
+    }
+
 });

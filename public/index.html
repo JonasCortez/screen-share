@@ -32,8 +32,32 @@
 
         <div class="controls">
 
+            <label for="resolutionSelect">
+                Resolução:
+            </label>
+
+            <select id="resolutionSelect">
+                <option value="1920x1080">1080p</option>
+                <option value="1280x720" selected>720p</option>
+                <option value="854x480">480p</option>
+            </select>
+
+            <label for="fpsSelect">
+                FPS:
+            </label>
+
+            <select id="fpsSelect">
+                <option value="60" selected>60 FPS</option>
+                <option value="30">30 FPS</option>
+                <option value="24">24 FPS</option>
+            </select>
+
             <button id="shareButton">
                 🖥️ Compartilhar tela
+            </button>
+
+            <button id="fullscreenButton">
+                ⛶ Tela cheia
             </button>
 
         </div>
