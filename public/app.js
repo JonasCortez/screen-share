@@ -87,8 +87,12 @@ shareButton.addEventListener("click", async () => {
                     max: fps
                 }
             },
-            audio: true,
-            windowAudio: "exclude",
+            audio: {
+                echoCancellation: false,
+                noiseSuppression: false,
+                autoGainControl: false
+            },
+            windowAudio: "window",
             systemAudio: "exclude"
          });
 
