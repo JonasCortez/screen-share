@@ -87,7 +87,9 @@ shareButton.addEventListener("click", async () => {
                     max: fps
                 }
             },
-            audio: true
+            audio: true,
+            windowAudio: "window",
+            systemAudio: "exclude"
          });
 
         localVideo.srcObject = localStream;
