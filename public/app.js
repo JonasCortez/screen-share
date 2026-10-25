@@ -88,7 +88,7 @@ shareButton.addEventListener("click", async () => {
                 }
             },
             audio: true,
-            windowAudio: "window",
+            windowAudio: "exclude",
             systemAudio: "exclude"
          });
 
